@@ -14,6 +14,7 @@
                     db '           c. Update Borrowed Book',13,10
                     db '           d. Return Book',13,10
                     db '           e. Available Books',13,10
+                    db '           f. Exit',13,10
                     db 10,10,10
                     db '  Choose Option: '
                     db 0
@@ -393,15 +394,48 @@ end_checking_book_index:
 
 PRINT_BORROWED_BOOK_INFO_index endp
 
-
+;-----------------------------------------------MAIN PROGRAM STARTS HERE---------------------------------------------------------;
 main proc
     mov ax, 3              
     int 10h
 
     mov ax, @data
     mov ds, ax            
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 00Eh
+MOV CH, 0
+MOV CL, 0
+MOV DH, 25
+MOV DL, 80
+INT 10h
 
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 00Ch
+MOV CH, 10
+MOV CL, 0
+MOV DH, 16
+MOV DL, 80
+INT 10h
 
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 0CCh
+MOV CH, 2
+MOV CL, 20
+MOV DH, 6
+MOV DL, 56
+INT 10h
+
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 04Eh
+MOV CH, 3
+MOV CL, 22
+MOV DH, 5
+MOV DL, 54
+INT 10h
 
 
 
@@ -594,6 +628,8 @@ MAIN_APP_LOOP:
     je SHOW_BORROWED_BOOKS_JUMP
     cmp al,'e'
     je SHOW_BOOKS_JUMP
+    cmp al, 'f'
+    je MENU_SCREEN_JUMP
 
 call MAIN_APP_LOOP
 
@@ -603,6 +639,8 @@ SHOW_BORROWED_BOOKS_JUMP:
     call SHOW_BORROWED_BOOKS
 SHOW_BOOKS_JUMP:
     call SHOW_BOOKS
+MENU_SCREEN_JUMP:
+    call main
 
 BORROW_BOOK:
     mov ax, 3              
