@@ -51,12 +51,15 @@
     temp_manipulate_record_var_days dw 0
 
     borrow_book_title       db 13,10,10,10,10,'                                   BORROW BOOK',13,10,0
-    borrow_bookID_prompt    db 13,10,10,'   Enter Book ID:',0
-    borrow_bookdays_prompt  db 13,10,'   Enter the number of days to borrow book:',0
+    borrow_bookID_prompt    db 13,10,10,'   Enter Book ID to Borrow:',0
+    borrow_bookdays_prompt  db 13,10,'   Enter the number of days until due to return book:',0
 
     update_book_title       db 13,10,10,10,10,'                            CHANGE DAYS TILL RETURN',13,10,0
-    update_bookID_prompt    db 13,10,10,'   Enter Book ID:',0
-    update_bookdays_prompt  db 13,10,'   Enter the new number of days to return book:',0
+    update_bookID_prompt    db 13,10,10,'   Enter Book ID to Update:',0
+    update_bookdays_prompt  db 13,10,'   Enter the new number of days until due to return book:',0
+
+    return_book_title       db 13,10,10,10,10,'                                   RETURN BOOK',13,10,0
+    return_bookID_prompt    db 13,10,10,'   Enter Book ID to Return:',0
 
     
 
@@ -282,7 +285,7 @@ manipulate_book_not_avaialable:
 
 MANIPULATE_CORRESPONDING_USER_RECORD endp
 
-RETURN_BOOK proc
+RETURN_BOOK_FUNC proc
     mov si, temp_manipulate_record_var_index
     shl si, 1
     cmp user_num,1
@@ -297,7 +300,7 @@ return_user1:
     mov library_records[si],1
     mov user1_records[si],0
     mov user1_records_days[si],0
-    retd
+    ret
 return_user2:
     cmp user1_records[si],0
     je user_not_borrowing
@@ -316,7 +319,7 @@ return_user3:
     ret
 user_not_borrowing:
     ret
-RETURN_BOOK endp
+RETURN_BOOK_FUNC endp
 
 ; THIS FUNCTION IS USED IN CHANGING A BOOK'S  
 ; DAYS TILL RETURN
@@ -798,6 +801,8 @@ MAIN_APP_LOOP:
     je SHOW_BORROWED_BOOKS_JUMP
     cmp al, 'c'
     je UPDATE_BORROWED_BOOK_JUMP
+    cmp al,'d'
+    je RETURN_BOOK_JUMP
     cmp al,'e'
     je SHOW_BOOKS_JUMP
     cmp al, 'f'
@@ -811,6 +816,8 @@ SHOW_BORROWED_BOOKS_JUMP:
     call SHOW_BORROWED_BOOKS
 UPDATE_BORROWED_BOOK_JUMP:
     call UPDATE_BORROWED_BOOK
+RETURN_BOOK_JUMP:
+    call RETURN_BOOK
 SHOW_BOOKS_JUMP:
     call SHOW_BOOKS
 MENU_SCREEN_JUMP:
@@ -1181,7 +1188,13 @@ END_SHOW_BORROWED_BOOKS:
     putstr press_enter
     getch al
     call MAIN_APP_LOOP
-
+RETURN_BOOK:
+    putstr return_book_title
+    putstr return_bookID_prompt
+    getint temp_manipulate_record_var_index
+    call RETURN_BOOK_FUNC
+    call MAIN_APP_LOOP
+END_RETURN_BOOK:
 UPDATE_BORROWED_BOOK:
     mov ax, 3              
     int 10h
