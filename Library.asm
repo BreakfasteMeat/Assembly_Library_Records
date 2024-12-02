@@ -11,7 +11,7 @@
     main_menu       db 13,10,10,'                              LIBRARY MANAGEMENT SYSTEM',13,10
                     db '           a. Borrow Book',13,10
                     db '           b. Show Borrowed Books',13,10
-                    db '           c. Update Borrowed Book',13,10
+                    db '           c. Change Return Days',13,10
                     db '           d. Return Book',13,10
                     db '           e. Available Books',13,10
                     db '           f. Exit',13,10
@@ -22,16 +22,16 @@
     usercount dw 0
 
     username1 db 20 DUP (?)
-    password1 dw 0
+    password1 db 20 DUP (?)
 
     username2 db 20 DUP (?)
-    password2 dw 0
+    password2 db 20 DUP (?)
 
     username3 db 20 DUP (?)
-    password3 dw 0
+    password3 db 20 DUP (?)
 
     username_check db 20 DUP (?)
-    password_check dw 0
+    password_check db 20 DUP (?)
     password_toCheck dw 0
 
     user1_records dw 0,0,0,0,0,0,0,0,0,0
@@ -54,41 +54,47 @@
     borrow_bookID_prompt    db 13,10,10,'   Enter Book ID:',0
     borrow_bookdays_prompt  db 13,10,'   Enter the number of days to borrow book:',0
 
+    update_book_title       db 13,10,10,10,10,'                            CHANGE DAYS TILL RETURN',13,10,0
+    update_bookID_prompt    db 13,10,10,'   Enter Book ID:',0
+    update_bookdays_prompt  db 13,10,'   Enter the new number of days to return book:',0
+
     
 
     book_list_menu db 13,10,10,'                                    List of Books',13,10,0
     book_list_row_info db 13,10,10
                              db '          |=========================================|==============|',13,10
                              db '          |           Book Name           | Book Id | Availability |',13,10,0
-    book_list_row_01         db '          | 01.) 48 Laws of Power         |   000   |',0
-    book_list_row_02         db '          | 02.) The Art of War           |   001   |',0
-    book_list_row_03         db '          | 03.) Crime and Punishment     |   002   |',0
-    book_list_row_04         db '          | 04.) Tale of Two Cities       |   003   |',0
-    book_list_row_05         db '          | 05.) 1984                     |   004   |',0
-    book_list_row_06         db '          | 06.) To Kill A Mockingbird    |   005   |',0
-    book_list_row_07         db '          | 07.) The Great Gatsby         |   006   |',0
-    book_list_row_08         db '          | 08.) Moby-Dick                |   007   |',0
-    book_list_row_09         db '          | 09.) The Catcher in the Rye   |   008   |',0
-    book_list_row_10         db '          | 10.) The Alchemist            |   009   |',0
+    book_list_row_01         db '          | 01.) 48 Laws of Power         |    0    |',0
+    book_list_row_02         db '          | 02.) The Art of War           |    1    |',0
+    book_list_row_03         db '          | 03.) Crime and Punishment     |    2    |',0
+    book_list_row_04         db '          | 04.) Tale of Two Cities       |    3    |',0
+    book_list_row_05         db '          | 05.) 1984                     |    4    |',0
+    book_list_row_06         db '          | 06.) To Kill A Mockingbird    |    5    |',0
+    book_list_row_07         db '          | 07.) The Great Gatsby         |    6    |',0
+    book_list_row_08         db '          | 08.) Moby-Dick                |    7    |',0
+    book_list_row_09         db '          | 09.) The Catcher in the Rye   |    8    |',0
+    book_list_row_10         db '          | 10.) The Alchemist            |    9    |',0
     book_list_row_end        db '          |=========================================|==============|',13,10,0
     available db '   Available  |','$'
     borrowed db  '   Borrowed   |','$'
 
     book_list_borrowed_menu db 13,10,10,'                                Your Borrowed Books',13,10,0
     
-    book_name_01 db '        48 Laws of Power           ',0,'$'
-    book_name_02 db '        The Art of War             ',0,'$'
-    book_name_03 db '        Crime and Punishment       ',0,'$'
-    book_name_04 db '        Tale of Two Cities         ',0,'$'
-    book_name_05 db '        1984                       ',0,'$'
-    book_name_06 db '        To Kill A Mockingbird      ',0,'$'
-    book_name_07 db '        The Great Gatsby           ',0,'$'
-    book_name_08 db '        Moby-Dick                  ',0,'$'
-    book_name_09 db '        The Catcher in the Rye     ',0,'$'
-    book_name_10 db '        The Alchemist              ',0,'$'
+    book_name_01 db '   48 Laws of Power       ',0,'$'
+    book_name_02 db '   The Art of War         ',0,'$'
+    book_name_03 db '   Crime and Punishment   ',0,'$'
+    book_name_04 db '   Tale of Two Cities     ',0,'$'
+    book_name_05 db '   1984                   ',0,'$'
+    book_name_06 db '   To Kill A Mockingbird  ',0,'$'
+    book_name_07 db '   The Great Gatsby       ',0,'$'
+    book_name_08 db '   Moby-Dick              ',0,'$'
+    book_name_09 db '   The Catcher in the Rye ',0,'$'
+    book_name_10 db '   The Alchemist          ',0,'$'
 
-    dash db ' -         ',0,'$'
-    days_left db ' days left to return',0,'$'
+    dash db ' -',0,'$'
+    days_left db ' day/s until due to return',0,'$'
+
+    dash_book_id db '  -  Book ID:',0,'$'
 
     book_num_index dw 0
     book_num_index_value dw 0
@@ -97,30 +103,30 @@
 
 
     opening_menu    db 13,10,10
-                    db '                    ',219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219
+                    db '                      ',219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219
                     db 13,10
-                    db '                    ',219,219,'                                 ',219,219,13,10
-                    db '                    ',219,219,'      CIT-U LIBRARY SYSTEM       ',219,219,13,10
-                    db '                    ',219,219,'                                 ',219,219,13,10
-                    db '                    ',219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219
+                    db '                      ',219,219,'                                ',219,219,13,10
+                    db '                      ',219,219,'      CIT-U LIBRARY SYSTEM      ',219,219,13,10
+                    db '                      ',219,219,'                                ',219,219,13,10
+                    db '                      ',219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219
                     db 13,10,10
-                    db '       By: Seth Nathaniel G. Emia           Programmed: December 00, 2024',13,10,10
-                    db '                      __...--~~~~~-._   _.-~~~~~--...__',13,10
-                    db '                    //               `V"               \\',13,10
-                    db '                   //                 |                 \\',13,10
-                    db '                  //__...--~~~~~~-._  |  _.-~~~~~~--...__\\ ',13,10
-                    db '                 //__.....----~~~~._\ | /_.~~~~----.....__\\',13,10
-                    db '                ====================\\|//====================',13,10
-                    db '                                    `---`',13,10,10,10
+                    db '        By: Seth Nathaniel G. Emia           Programmed: December 00, 2024',13,10,10,10
+                    db '                       __...--~~~~~-._   _.-~~~~~--...__',13,10
+                    db '                     //               `V"               \\',13,10
+                    db '                    //                 |                 \\',13,10
+                    db '                   //__...--~~~~~~-._  |  _.-~~~~~~--...__\\ ',13,10
+                    db '                  //__.....----~~~~._\ | /_.~~~~----.....__\\',13,10
+                    db '                 ====================\\|//====================',13,10
+                    db '                                     `---`',13,10,10,10
                     db '  1. REGISTER',13,10
                     db '  2. LOG-IN',13,10
                     db '  Choose Number: ',0
 
     register_screen db 13,10,10
-                    db '                           LIBRARY REGISTER USER',13,10,0
+                    db '                               LIBRARY REGISTER USER',13,10,0
     
     register_username db 13,10,'   Enter username: ',0
-    register_password db 13,10,'   Enter password: ',0
+    register_password db 13,10,10,'   Enter password: ',0
     register_full_msg db 13,10,'   THE SYSTEM HAS REACHED ITS MAX AMOUNT OF USERS',0
     register_succ     db 13,10,'   SUCCESSFULLY REGISTERED USER',0
     register_username_used db 13,10,'   USERNAME IS ALREADY USED, TRY A DIFFERENT ONE',0
@@ -136,6 +142,7 @@
     user_not_found_msg db '   User Not Found!',0
 
     book_not_available db '   Book not available!',0,'$'
+    book_not_borrowed  db '   You are not borrowing that book!',0,'$'
 
 .code
 INCLUDE IO.mac
@@ -222,9 +229,9 @@ IF_AVAIALBLE_YES:
     ret
 IF_AVAIALBLE endp
 
-;
-;
-;
+; THIS FUNCTION IS USED IN ADDING A BOOK 
+; OR BORROWING A BOOK AND ITS CORRESPONDING
+; DAYS TILL RETURN / DUE
 MANIPULATE_CORRESPONDING_USER_RECORD proc
     mov si, temp_manipulate_record_var_index
     shl si, 1
@@ -256,6 +263,15 @@ manipulate_user2_record:
     mov user2_records_days[si],cx
     ret
 manipulate_user3_record:
+    cmp library_records[si],0
+    je manipulate_book_not_avaialable
+    
+    mov library_records[si],0
+    mov user3_records[si],1
+    xor cx, cx
+    mov cx, temp_manipulate_record_var_days
+    mov user3_records_days[si],cx
+    ret
 manipulate_book_not_avaialable:
     mov dl, 10
     call PRINT_CHARACTER
@@ -265,6 +281,89 @@ manipulate_book_not_avaialable:
 
 
 MANIPULATE_CORRESPONDING_USER_RECORD endp
+
+RETURN_BOOK proc
+    mov si, temp_manipulate_record_var_index
+    shl si, 1
+    cmp user_num,1
+    je return_user1
+    cmp user_num,2
+    je return_user2
+    jmp return_user3
+return_user1:
+    cmp user1_records[si],0
+    je user_not_borrowing
+
+    mov library_records[si],1
+    mov user1_records[si],0
+    mov user1_records_days[si],0
+    retd
+return_user2:
+    cmp user1_records[si],0
+    je user_not_borrowing
+
+    mov library_records[si],1
+    mov user1_records[si],0
+    mov user1_records_days[si],0
+    ret
+return_user3:
+    cmp user1_records[si],0
+    je user_not_borrowing
+
+    mov library_records[si],1
+    mov user1_records[si],0
+    mov user1_records_days[si],0
+    ret
+user_not_borrowing:
+    ret
+RETURN_BOOK endp
+
+; THIS FUNCTION IS USED IN CHANGING A BOOK'S  
+; DAYS TILL RETURN
+CHANGE_BOOK_RETURN_DAYS proc
+    mov si, temp_manipulate_record_var_index
+    shl si, 1
+    cmp user_num,1
+    je change_user_record1
+    cmp user_num,2
+    je change_user_record2
+    jmp change_user_record3
+    ret
+change_user_record1:
+    cmp user1_records[si],0
+    je not_borrowing_book
+    
+    xor cx, cx
+    mov cx, temp_manipulate_record_var_days
+    mov user1_records_days[si],cx
+    ret
+change_user_record2:
+    cmp user2_records[si],0
+    je not_borrowing_book
+    
+    
+    xor cx, cx
+    mov cx, temp_manipulate_record_var_days
+    mov user2_records_days[si],cx
+    ret
+change_user_record3:
+    cmp user3_records[si],0
+    je not_borrowing_book
+    
+    
+    xor cx, cx
+    mov cx, temp_manipulate_record_var_days
+    mov user3_records_days[si],cx
+    ret
+not_borrowing_book:
+    mov dl, 10
+    call PRINT_CHARACTER
+    lea dx, book_not_borrowed
+    call PRINT_STRING
+    ret
+
+
+CHANGE_BOOK_RETURN_DAYS endp
 
 
 
@@ -382,11 +481,19 @@ check_index_9_print_book:
     jmp end_checking_book_index
 
 end_checking_book_index:
+    lea dx, dash_book_id
+    call PRINT_STRING
+
+    mov ax, book_num_index
+    call PRINT_INTEGER
+
     lea dx, dash
     call PRINT_STRING
     
     mov ax,book_num_index_days
     call print_integer
+
+
     
     lea dx, days_left
     call PRINT_STRING
@@ -410,31 +517,14 @@ MOV DH, 25
 MOV DL, 80
 INT 10h
 
-MOV AH, 06h
-MOV AL, 00h
-MOV BH, 00Ch
-MOV CH, 10
-MOV CL, 0
-MOV DH, 16
-MOV DL, 80
-INT 10h
-
-MOV AH, 06h
-MOV AL, 00h
-MOV BH, 0CCh
-MOV CH, 2
-MOV CL, 20
-MOV DH, 6
-MOV DL, 56
-INT 10h
-
+;Red BG with Light Yellow FG
 MOV AH, 06h
 MOV AL, 00h
 MOV BH, 04Eh
-MOV CH, 3
+MOV CH, 2
 MOV CL, 22
-MOV DH, 5
-MOV DL, 54
+MOV DH, 6
+MOV DL, 56
 INT 10h
 
 
@@ -463,6 +553,27 @@ retREGISTER:
 REGISTER:
     mov ax, 03
     int 10h
+
+    ;White BG with Black FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 070h
+MOV CH, 0
+MOV CL, 0
+MOV DH, 25
+MOV DL, 80
+INT 10h
+
+    ;Black BG with Light Yellow FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 00Eh
+MOV CH, 4
+MOV CL, 19
+MOV DH, 4
+MOV DL, 60
+INT 10h
+
     mov ax, MAX_USER_COUNT
     cmp ax,usercount
     je REGISTER_FULL_JUMP
@@ -472,9 +583,18 @@ REGISTER:
     cmp usercount,0
     jne register_user2
     GetStr username1
+    ;Black BG with Light Yellow FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 00Eh
+MOV CH, 6
+MOV CL, 19
+MOV DH, 6
+MOV DL, 60
+INT 10h
     putStr register_password
 
-    getint password1
+    getstr password1
     jmp REGISTER_FINAL
 REGISTER_FULL_JUMP:
     call REGISTER_FULL
@@ -485,21 +605,48 @@ register_user2:
     GetStr username2
     lea si, username2
     putStr register_password
-    getint password2
+    ;Black BG with Light Yellow FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 00Eh
+MOV CH, 6
+MOV CL, 19
+MOV DH, 6
+MOV DL, 60
+INT 10h
+    getstr password2
     jmp REGISTER_FINAL
 
 register_user3:
     GetStr username3
     lea si, username3
     putStr register_password
-    getint password3
+    ;Black BG with Light Yellow FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 00Eh
+MOV CH, 6
+MOV CL, 19
+MOV DH, 6
+MOV DL, 60
+INT 10h
+    getstr password3
     jmp REGISTER_FINAL
 
 REGISTER_FINAL:
-    
+
     CALL CHECK_USER_ALREADY_EXISTS
     
 USER_IS_UNIQUE:
+;Blinking Green BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 0AFh
+MOV CH, 8
+MOV CL, 2
+MOV DH, 9
+MOV DL, 35
+INT 10h 
     inc usercount
     nwln
     putstr register_succ
@@ -510,8 +657,19 @@ USER_IS_UNIQUE:
     jmp main
 
 REGISTER_FULL:
+;Blinking Red BG with Light Yellow FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 0CEh
+MOV CH, 0
+MOV CL, 0
+MOV DH, 25
+MOV DL, 80
+INT 10h
     PutStr register_full_msg
+
     PutStr press_enter
+
     GetCH AL
     xor al, al
 
@@ -527,7 +685,7 @@ LOGIN:
     putStr login_username
     GetStr username_check
     putStr login_password
-    getint password_check
+    getstr password_check
 
 ;---------------CHECK FIRST USERNAME-------------------;
     lea si, username_check
@@ -536,7 +694,7 @@ LOGIN:
     cmp AL,0
     je check_username_2
     mov user_num,1
-    mov CX, password1
+    lea di, password1
     jmp end_username_compare
 check_username_2:
     lea si, username_check
@@ -545,7 +703,7 @@ check_username_2:
     cmp AL,0
     je check_username_3
     mov user_num,2
-    mov CX, password2
+    lea di, password2
     jmp end_username_compare
 check_username_3:
     lea si, username_check
@@ -553,14 +711,16 @@ check_username_3:
     CALL STRING_COMPARE
     cmp AL,0
     je USER_NOT_FOUND
-    mov user_num,1
-    mov CX, password3
+    mov user_num,3
+    lea di, password3
     jmp end_username_compare
 
     
 
 end_username_compare:
-    cmp password_check, CX
+    lea si, password_check
+    call STRING_COMPARE
+    cmp AL,1
     je MAIN_APP_LOOP_JUMP
     call wrong_password_section
 MAIN_APP_LOOP_JUMP:
@@ -605,6 +765,16 @@ CHECK_USER_ALREADY_EXISTS:
     je FINISH_USER_ALREADY_EXISTS
 
 USER_ALREADY_EXISTS:
+;Blinking Red BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 0CEh
+MOV CH, 8
+MOV CL, 2
+MOV DH, 9
+MOV DL, 48
+INT 10h
+    nwln
     PutStr register_username_used
     nwln
     PutStr press_enter
@@ -626,6 +796,8 @@ MAIN_APP_LOOP:
     je BORROW_BOOK_JUMP
     cmp al, 'b'
     je SHOW_BORROWED_BOOKS_JUMP
+    cmp al, 'c'
+    je UPDATE_BORROWED_BOOK_JUMP
     cmp al,'e'
     je SHOW_BOOKS_JUMP
     cmp al, 'f'
@@ -637,6 +809,8 @@ BORROW_BOOK_JUMP:
     call BORROW_BOOK
 SHOW_BORROWED_BOOKS_JUMP:
     call SHOW_BORROWED_BOOKS
+UPDATE_BORROWED_BOOK_JUMP:
+    call UPDATE_BORROWED_BOOK
 SHOW_BOOKS_JUMP:
     call SHOW_BOOKS
 MENU_SCREEN_JUMP:
@@ -657,7 +831,6 @@ BORROW_BOOK:
 
     call MAIN_APP_LOOP
 
-;-----------------------BORROW_BOOK_JUMPS-----------------------
 load_2nd_user_borrowed_books_jump:
     call load_2nd_user_borrowed_books
 SHOW_BORROWED_BOOKS:
@@ -895,11 +1068,139 @@ load_2nd_user_borrowed_books:
 
 load_3rd_user_borrowed_books:
 
+    mov bx,0
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+    
+    
+    mov bx, 1
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+
+        
+    mov bx, 2
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+    
+    mov bx, 3
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+
+        
+    mov bx, 4
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+        
+    mov bx, 5
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+
+        
+    mov bx, 6
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+        
+    mov bx, 7
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+
+        
+    mov bx, 8
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+
+    
+    mov bx, 9
+    mov si,bx
+    shl si,1
+    mov ax, user3_records[si]
+    mov book_num_index_value,ax
+    mov book_num_index,bx
+    mov ax, user3_records_days[si]
+    mov book_num_index_days,ax
+    call PRINT_BORROWED_BOOK_INFO_index
+
+    jmp END_SHOW_BORROWED_BOOKS
+
 END_SHOW_BORROWED_BOOKS:
     nwln
     putstr press_enter
     getch al
     call MAIN_APP_LOOP
+
+UPDATE_BORROWED_BOOK:
+    mov ax, 3              
+    int 10h
+    putstr update_book_title
+
+    putstr update_bookID_prompt
+    getint temp_manipulate_record_var_index
+    
+    putstr update_bookdays_prompt
+    getint temp_manipulate_record_var_days
+
+    call CHANGE_BOOK_RETURN_DAYS
+
+END_UPDATE_BORROWED_BOOK:
+    nwln
+    putstr press_enter
+    getch al
+    call MAIN_APP_LOOP
+
 SHOW_BOOKS:
     mov ax, 3              
     int 10h
