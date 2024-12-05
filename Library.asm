@@ -1,3 +1,11 @@
+; SETH NATHANIEL G. EMIA
+; DECEMBER 6, 2024
+; CIT-U LIBRARY MANAGEMENT SYSTEM
+;   - This system allows users (MAX OF 3 USERS) to borrow
+;     and return from a preselected number of books
+
+
+
 .model large
 .stack 100h
 
