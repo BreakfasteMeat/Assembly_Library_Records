@@ -8,7 +8,7 @@
     three_spaces db '   ',0,'$'
     
     MAX_USER_COUNT dw 3 
-    main_menu       db 13,10,10,'                              LIBRARY MANAGEMENT SYSTEM',13,10
+    main_menu       db 13,10,10,'                           LIBRARY MANAGEMENT SYSTEM',13,10
                     db '           a. Borrow Book',13,10
                     db '           b. Show Borrowed Books',13,10
                     db '           c. Change Return Days',13,10
@@ -51,19 +51,19 @@
     temp_manipulate_record_var_days dw 0
 
     borrow_book_title       db 13,10,10,10,10,'                                   BORROW BOOK',13,10,0
-    borrow_bookID_prompt    db 13,10,10,'   Enter Book ID to Borrow:',0
-    borrow_bookdays_prompt  db 13,10,'   Enter the number of days until due to return book:',0
+    borrow_bookID_prompt    db 13,10,10,'   Enter Book ID to Borrow: ',0
+    borrow_bookdays_prompt  db 13,10,'   Enter the number of days until due to return book (MAX 50 DAYS): ',0
 
     update_book_title       db 13,10,10,10,10,'                            CHANGE DAYS TILL RETURN',13,10,0
-    update_bookID_prompt    db 13,10,10,'   Enter Book ID to Update:',0
-    update_bookdays_prompt  db 13,10,'   Enter the new number of days until due to return book:',0
+    update_bookID_prompt    db 13,10,10,'   Enter Book ID to Update: ',0
+    update_bookdays_prompt  db 13,10,'   Enter the new number of days until due to return book (MAX 50 DAYS): ',0
 
     return_book_title       db 13,10,10,10,10,'                                   RETURN BOOK',13,10,0
-    return_bookID_prompt    db 13,10,10,'   Enter Book ID to Return:',0
+    return_bookID_prompt    db 13,10,10,'   Enter Book ID to Return: ',0
 
     
 
-    book_list_menu db 13,10,10,'                                    List of Books',13,10,0
+    book_list_menu db 13,10,10,'                                 List of Books',13,10,0
     book_list_row_info db 13,10,10
                              db '          |=========================================|==============|',13,10
                              db '          |           Book Name           | Book Id | Availability |',13,10,0
@@ -81,7 +81,7 @@
     available db '   Available  |','$'
     borrowed db  '   Borrowed   |','$'
 
-    book_list_borrowed_menu db 13,10,10,'                                Your Borrowed Books',13,10,0
+    book_list_borrowed_menu db 13,10,10,'                                Your Borrowed Books',13,10,0,'$'
     
     book_name_01 db '   48 Laws of Power       ',0,'$'
     book_name_02 db '   The Art of War         ',0,'$'
@@ -94,6 +94,8 @@
     book_name_09 db '   The Catcher in the Rye ',0,'$'
     book_name_10 db '   The Alchemist          ',0,'$'
 
+    string_cannot_be_empty db '   Inputs cannot be empty!',0,'$'
+
     dash db ' -',0,'$'
     days_left db ' day/s until due to return',0,'$'
 
@@ -102,6 +104,8 @@
     book_num_index dw 0
     book_num_index_value dw 0
     book_num_index_days dw 0
+
+    error_invalid_num_of_days_prompt db 13,10,'   Days input must be greater than 0 and less than 51!',13,10,0,'$'
 
 
 
@@ -113,7 +117,7 @@
                     db '                      ',219,219,'                                ',219,219,13,10
                     db '                      ',219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219,219
                     db 13,10,10
-                    db '        By: Seth Nathaniel G. Emia           Programmed: December 00, 2024',13,10,10,10
+                    db '        By: Seth Nathaniel G. Emia           Programmed: December 06, 2024',13,10,10,10
                     db '                       __...--~~~~~-._   _.-~~~~~--...__',13,10
                     db '                     //               `V"               \\',13,10
                     db '                    //                 |                 \\',13,10
@@ -123,10 +127,11 @@
                     db '                                     `---`',13,10,10,10
                     db '  1. REGISTER',13,10
                     db '  2. LOG-IN',13,10
+                    db '  3. EXIT',13,10
                     db '  Choose Number: ',0
 
     register_screen db 13,10,10
-                    db '                               LIBRARY REGISTER USER',13,10,0
+                    db '                          LIBRARY REGISTER USER',13,10,0
     
     register_username db 13,10,'   Enter username: ',0
     register_password db 13,10,10,'   Enter password: ',0
@@ -138,15 +143,15 @@
                     db '                               LIBRARY LOGIN',13,10,0
 
     login_username    db 13,10,'   Enter username: ',0
-    login_password    db 13,10,'   Enter password: ',0
+    login_password    db 13,10,10,'   Enter password: ',0
     press_enter db '   Press Enter to continue!',0,'$'
     wrong_password  db '   Incorrect Password!',13,10
                     db '   Press Enter to try again!',0
-    user_not_found_msg db '   User Not Found!',0
+    user_not_found_msg db '   User Not Found! Register First',0
 
     book_not_available db '   Book not available!',0,'$'
-    book_not_borrowed  db '   You are not borrowing that book!',0,'$'
-
+    book_not_borrowed  db 13,10,'   You are not borrowing that book!',0,'$'
+    book_id_does_not_exist_prompt db 13,10,'   Book ID does not exist!',0,'$'
 .code
 INCLUDE IO.mac
 PRINT_STRING proc
@@ -184,6 +189,18 @@ print_loop:
     ret
 PRINT_INTEGER endp
 
+
+IS_EMPTY_JUMP: 
+    call IS_EMPTY
+CHECK_EMPTY proc
+    mov al,[si]
+    cmp al,0
+    je IS_EMPTY_JUMP
+    ret
+
+CHECK_EMPTY endp
+
+
 ;COMPARES 2 STRINGS MOVED INTO THE SI AND DI REGISTERS
 ;MOVES 0 TO AL IF NOT EQUAL
 ;MOVES 1 TO AL IF EQUAL
@@ -212,6 +229,15 @@ equal:
     ret
 STRING_COMPARE endp
 
+;FOR COLORING
+IF_AVAIALBLE_AL proc
+    je IF_AVAIALBLE_YES_AL
+    mov AL, 0
+    ret    
+IF_AVAIALBLE_YES_AL:
+    mov AL, 1
+    ret
+IF_AVAIALBLE_AL endp
 
 ;USED IN PRINTING THE TABLE
 ;IF 0, BORROWED, ELSE AVAILABLE
@@ -223,7 +249,7 @@ IF_AVAIALBLE proc
 
     lea dx, borrowed  
     mov ah, 09h      
-    int 21h          
+    int 21h  
     ret
 IF_AVAIALBLE_YES:
     lea dx, available  
@@ -235,6 +261,7 @@ IF_AVAIALBLE endp
 ; THIS FUNCTION IS USED IN ADDING A BOOK 
 ; OR BORROWING A BOOK AND ITS CORRESPONDING
 ; DAYS TILL RETURN / DUE
+
 MANIPULATE_CORRESPONDING_USER_RECORD proc
     mov si, temp_manipulate_record_var_index
     shl si, 1
@@ -318,6 +345,8 @@ return_user3:
     mov user1_records_days[si],0
     ret
 user_not_borrowing:
+    lea dx, book_not_borrowed
+    call PRINT_STRING
     ret
 RETURN_BOOK_FUNC endp
 
@@ -504,6 +533,8 @@ end_checking_book_index:
 
 PRINT_BORROWED_BOOK_INFO_index endp
 
+
+
 ;-----------------------------------------------MAIN PROGRAM STARTS HERE---------------------------------------------------------;
 main proc
     mov ax, 3              
@@ -542,14 +573,17 @@ retOpScreen:
     je REGISTER_JUMP
     cmp AL, '2'
     je LOGIN_JUMP
+    cmp AL, '3'
+    je EXIT_PROGRAM
+    call main
 
 
 REGISTER_JUMP:
     call REGISTER
 LOGIN_JUMP:
     call LOGIN
-retREGISTER:
-    jmp done
+EXIT_PROGRAM:
+    call done
 
 
 ;---------------------------------------------REGISTER SCREEN-----------------------------------------------------;
@@ -586,6 +620,8 @@ INT 10h
     cmp usercount,0
     jne register_user2
     GetStr username1
+    lea si, username1
+    call CHECK_EMPTY
     ;Black BG with Light Yellow FG
 MOV AH, 06h
 MOV AL, 00h
@@ -598,6 +634,8 @@ INT 10h
     putStr register_password
 
     getstr password1
+    lea si, password1
+    call CHECK_EMPTY
     jmp REGISTER_FINAL
 REGISTER_FULL_JUMP:
     call REGISTER_FULL
@@ -607,6 +645,7 @@ register_user2:
     jne register_user3
     GetStr username2
     lea si, username2
+    call CHECK_EMPTY
     putStr register_password
     ;Black BG with Light Yellow FG
 MOV AH, 06h
@@ -618,11 +657,14 @@ MOV DH, 6
 MOV DL, 60
 INT 10h
     getstr password2
+    lea si, password2
+    call CHECK_EMPTY
     jmp REGISTER_FINAL
 
 register_user3:
     GetStr username3
     lea si, username3
+    call CHECK_EMPTY
     putStr register_password
     ;Black BG with Light Yellow FG
 MOV AH, 06h
@@ -634,11 +676,14 @@ MOV DH, 6
 MOV DL, 60
 INT 10h
     getstr password3
+    lea si, password3
+    call CHECK_EMPTY
     jmp REGISTER_FINAL
 
 REGISTER_FINAL:
 
     CALL CHECK_USER_ALREADY_EXISTS
+    CALL CHECK_EMPTY
     
 USER_IS_UNIQUE:
 ;Blinking Green BG with Bright White FG
@@ -684,15 +729,44 @@ INT 10h
 LOGIN:
     mov ax, 03
     int 10h
+    ;White BG with Black FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 070h
+MOV CH, 0
+MOV CL, 0
+MOV DH, 25
+MOV DL, 80
+INT 10h
+
+    ;Black BG with Light Yellow FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 00Eh
+MOV CH, 4
+MOV CL, 19
+MOV DH, 4
+MOV DL, 60
+INT 10h
     putStr login_screen
     putStr login_username
     GetStr username_check
+    ;Black BG with Light Yellow FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 00Eh
+MOV CH, 6
+MOV CL, 19
+MOV DH, 6
+MOV DL, 60
+INT 10h
     putStr login_password
     getstr password_check
 
 ;---------------CHECK FIRST USERNAME-------------------;
     lea si, username_check
     lea di, username1
+    call CHECK_EMPTY
     CALL STRING_COMPARE
     cmp AL,0
     je check_username_2
@@ -722,6 +796,7 @@ check_username_3:
 
 end_username_compare:
     lea si, password_check
+    call CHECK_EMPTY
     call STRING_COMPARE
     cmp AL,1
     je MAIN_APP_LOOP_JUMP
@@ -768,6 +843,7 @@ CHECK_USER_ALREADY_EXISTS:
     je FINISH_USER_ALREADY_EXISTS
 
 USER_ALREADY_EXISTS:
+
 ;Blinking Red BG with Bright White FG
 MOV AH, 06h
 MOV AL, 00h
@@ -787,10 +863,30 @@ INT 10h
 
 FINISH_USER_ALREADY_EXISTS:
     call USER_IS_UNIQUE
+
+IS_EMPTY:
+    nwln
+    PutStr string_cannot_be_empty
+    nwln
+    PutStr press_enter
+    GetCH AL
+    call main
+
+
+
 ;------------MAIN APP STARTS HERE----------------;
 MAIN_APP_LOOP:
     mov ax, 3              
     int 10h
+;White BG with Black FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 070h
+MOV CH, 0
+MOV CL, 0
+MOV DH, 25
+MOV DL, 80
+INT 10h
 
     PutStr main_menu
     
@@ -814,6 +910,7 @@ BORROW_BOOK_JUMP:
     call BORROW_BOOK
 SHOW_BORROWED_BOOKS_JUMP:
     call SHOW_BORROWED_BOOKS
+    call MAIN_APP_LOOP
 UPDATE_BORROWED_BOOK_JUMP:
     call UPDATE_BORROWED_BOOK
 RETURN_BOOK_JUMP:
@@ -822,15 +919,43 @@ SHOW_BOOKS_JUMP:
     call SHOW_BOOKS
 MENU_SCREEN_JUMP:
     call main
+book_id_does_not_exist:
+    lea dx, book_id_does_not_exist_prompt
+    call PRINT_STRING
 
+    mov dl, 10
+    call PRINT_CHARACTER
+
+    lea dx, press_enter
+    call PRINT_STRING
+    getch AL
+    call MAIN_APP_LOOP
+error_invalid_num_of_days:
+    putstr error_invalid_num_of_days_prompt
+    nwln
+    putstr press_enter
+    getch AL
 BORROW_BOOK:
     mov ax, 3              
     int 10h
     putstr borrow_book_title
     putstr borrow_bookID_prompt
     getint temp_manipulate_record_var_index
+
+    cmp temp_manipulate_record_var_index,0
+    jl book_id_does_not_exist
+    cmp temp_manipulate_record_var_index,9
+    jg book_id_does_not_exist
+    
+    
     putstr borrow_bookdays_prompt
     getint temp_manipulate_record_var_days
+
+    cmp temp_manipulate_record_var_days,1
+    jl error_invalid_num_of_days
+    cmp temp_manipulate_record_var_days,50
+    jg error_invalid_num_of_days
+
     call MANIPULATE_CORRESPONDING_USER_RECORD
     nwln
     putstr press_enter
@@ -846,7 +971,8 @@ SHOW_BORROWED_BOOKS:
     xor ax,ax
     xor bx,bx
 
-    putstr book_list_borrowed_menu
+    lea dx, book_list_borrowed_menu
+    call PRINT_STRING
 
     cmp user_num,1
     jne load_2nd_user_borrowed_books_jump
@@ -1188,13 +1314,31 @@ END_SHOW_BORROWED_BOOKS:
     putstr press_enter
     getch al
     call MAIN_APP_LOOP
+
 RETURN_BOOK:
+    mov ax, 3              
+    int 10h
     putstr return_book_title
     putstr return_bookID_prompt
     getint temp_manipulate_record_var_index
     call RETURN_BOOK_FUNC
-    call MAIN_APP_LOOP
+    
 END_RETURN_BOOK:
+    nwln
+    putstr press_enter
+    getch al
+    call MAIN_APP_LOOP
+update_invalid_book_id:
+    putstr book_id_does_not_exist_prompt
+    nwln
+    putstr press_enter
+    getch al
+    call UPDATE_BORROWED_BOOK
+update_invalid_num_days:
+    putstr error_invalid_num_of_days_prompt
+    nwln
+    putstr press_enter
+    getch al
 UPDATE_BORROWED_BOOK:
     mov ax, 3              
     int 10h
@@ -1202,31 +1346,142 @@ UPDATE_BORROWED_BOOK:
 
     putstr update_bookID_prompt
     getint temp_manipulate_record_var_index
+
+    cmp temp_manipulate_record_var_index, 0
+    jl update_invalid_book_id
+    cmp temp_manipulate_record_var_index, 9
+    jg update_invalid_book_id
     
     putstr update_bookdays_prompt
     getint temp_manipulate_record_var_days
 
-    call CHANGE_BOOK_RETURN_DAYS
+    cmp temp_manipulate_record_var_days,1
+    jl update_invalid_num_days
+    cmp temp_manipulate_record_var_days,50
+    jg update_invalid_num_days
 
+    call CHANGE_BOOK_RETURN_DAYS
+    call END_UPDATE_BORROWED_BOOK
+    
 END_UPDATE_BORROWED_BOOK:
     nwln
     putstr press_enter
     getch al
     call MAIN_APP_LOOP
-
+    
 SHOW_BOOKS:
     mov ax, 3              
     int 10h
-    xor cx,cx
     
+    xor cx,cx
     xor AL,AL
+;White BG with Black FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 070h
+MOV CH, 0
+MOV CL, 0
+MOV DH, 25
+MOV DL, 80
+INT 10h
 
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 03Fh
+MOV CH, 1
+MOV CL, 30
+MOV DH, 3
+MOV DL, 48
+INT 10h
+;Cyan BG with White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 03Fh
+MOV CH, 5
+MOV CL, 10
+MOV DH, 17
+MOV DL, 67
+INT 10h
+;Blue BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 01Fh
+MOV CH, 7
+MOV CL, 10
+MOV DH, 7
+MOV DL, 67
+INT 10h
+
+;Blue BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 01Fh
+MOV CH, 9
+MOV CL, 10
+MOV DH, 9
+MOV DL, 67
+INT 10h
+
+;Blue BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 01Fh
+MOV CH, 11
+MOV CL, 10
+MOV DH, 11
+MOV DL, 67
+INT 10h
+
+;Blue BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 01Fh
+MOV CH, 13
+MOV CL, 10
+MOV DH, 13
+MOV DL, 67
+INT 10h
+
+;Blue BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 01Fh
+MOV CH, 15
+MOV CL, 10
+MOV DH, 15
+MOV DL, 67
+INT 10h
     putstr book_list_menu
     putstr book_list_row_info
     
     putstr book_list_row_01
     mov si, 0
     shl si, 1
+    mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL,0
+    je book_list_row1_borrowed
+    ;Green BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 02Fh
+MOV CH, 7
+MOV CL, 53
+MOV DH, 7
+MOV DL, 66
+INT 10h
+    jmp book_list_row1_end
+    book_list_row1_borrowed:
+;Red BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 04Fh
+MOV CH, 7
+MOV CL, 53
+MOV DH, 7
+MOV DL, 66
+INT 10h
+    book_list_row1_end:
     mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
