@@ -231,6 +231,8 @@ STRING_COMPARE endp
 
 ;FOR COLORING
 IF_AVAIALBLE_AL proc
+    mov bx, 1
+    cmp AX, BX
     je IF_AVAIALBLE_YES_AL
     mov AL, 0
     ret    
@@ -329,20 +331,20 @@ return_user1:
     mov user1_records_days[si],0
     ret
 return_user2:
-    cmp user1_records[si],0
+    cmp user2_records[si],0
     je user_not_borrowing
 
     mov library_records[si],1
-    mov user1_records[si],0
-    mov user1_records_days[si],0
+    mov user2_records[si],0
+    mov user2_records_days[si],0
     ret
 return_user3:
-    cmp user1_records[si],0
+    cmp user3_records[si],0
     je user_not_borrowing
 
     mov library_records[si],1
-    mov user1_records[si],0
-    mov user1_records_days[si],0
+    mov user3_records[si],0
+    mov user3_records_days[si],0
     ret
 user_not_borrowing:
     lea dx, book_not_borrowed
@@ -1485,69 +1487,296 @@ INT 10h
     mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
-
+    
     putstr book_list_row_02
     mov si, 1
     shl si, 1
     mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL,0
+    je book_list_row2_borrowed
+    ;Green BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 02Fh
+MOV CH, 8
+MOV CL, 53
+MOV DH, 8
+MOV DL, 66
+INT 10h
+    jmp book_list_row2_end
+    book_list_row2_borrowed:
+;Red BG with Bright White FG
+MOV AH, 06h
+MOV AL, 00h
+MOV BH, 04Fh
+MOV CH, 8
+MOV CL, 53
+MOV DH, 8
+MOV DL, 66
+INT 10h
+book_list_row2_end:
+    mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
 
-    putstr book_list_row_03
+
+putstr book_list_row_03
     mov si, 2
     shl si, 1
     mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL, 0
+    je book_list_row3_borrowed
+    ; Green BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 02Fh
+    MOV CH, 9
+    MOV CL, 53
+    MOV DH, 9
+    MOV DL, 66
+    INT 10h
+    jmp book_list_row3_end
+book_list_row3_borrowed:
+    ; Red BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 04Fh
+    MOV CH, 9
+    MOV CL, 53
+    MOV DH, 9
+    MOV DL, 66
+    INT 10h
+book_list_row3_end:
+    mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
 
-    putstr book_list_row_04
+putstr book_list_row_04
     mov si, 3
     shl si, 1
     mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL, 0
+    je book_list_row4_borrowed
+    ; Green BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 02Fh
+    MOV CH, 10
+    MOV CL, 53
+    MOV DH, 10
+    MOV DL, 66
+    INT 10h
+    jmp book_list_row4_end
+book_list_row4_borrowed:
+    ; Red BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 04Fh
+    MOV CH, 10
+    MOV CL, 53
+    MOV DH, 10
+    MOV DL, 66
+    INT 10h
+book_list_row4_end:
+    mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
 
-    putstr book_list_row_05
+putstr book_list_row_05
     mov si, 4
     shl si, 1
     mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL, 0
+    je book_list_row5_borrowed
+    ; Green BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 02Fh
+    MOV CH, 11
+    MOV CL, 53
+    MOV DH, 11
+    MOV DL, 66
+    INT 10h
+    jmp book_list_row5_end
+book_list_row5_borrowed:
+    ; Red BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 04Fh
+    MOV CH, 11
+    MOV CL, 53
+    MOV DH, 11
+    MOV DL, 66
+    INT 10h
+book_list_row5_end:
+    mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
 
-    putstr book_list_row_06
+putstr book_list_row_06
     mov si, 5
     shl si, 1
     mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL, 0
+    je book_list_row6_borrowed
+    ; Green BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 02Fh
+    MOV CH, 12
+    MOV CL, 53
+    MOV DH, 12
+    MOV DL, 66
+    INT 10h
+    jmp book_list_row6_end
+book_list_row6_borrowed:
+    ; Red BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 04Fh
+    MOV CH, 12
+    MOV CL, 53
+    MOV DH, 12
+    MOV DL, 66
+    INT 10h
+book_list_row6_end:
+    mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
 
-    putstr book_list_row_07
+putstr book_list_row_07
     mov si, 6
     shl si, 1
     mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL, 0
+    je book_list_row7_borrowed
+    ; Green BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 02Fh
+    MOV CH, 13
+    MOV CL, 53
+    MOV DH, 13
+    MOV DL, 66
+    INT 10h
+    jmp book_list_row7_end
+book_list_row7_borrowed:
+    ; Red BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 04Fh
+    MOV CH, 13
+    MOV CL, 53
+    MOV DH, 13
+    MOV DL, 66
+    INT 10h
+book_list_row7_end:
+    mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
 
-    putstr book_list_row_08
+putstr book_list_row_08
     mov si, 7
     shl si, 1
     mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL, 0
+    je book_list_row8_borrowed
+    ; Green BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 02Fh
+    MOV CH, 14
+    MOV CL, 53
+    MOV DH, 14
+    MOV DL, 66
+    INT 10h
+    jmp book_list_row8_end
+book_list_row8_borrowed:
+    ; Red BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 04Fh
+    MOV CH, 14
+    MOV CL, 53
+    MOV DH, 14
+    MOV DL, 66
+    INT 10h
+book_list_row8_end:
+    mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
 
-    putstr book_list_row_09
+putstr book_list_row_09
     mov si, 8
     shl si, 1
     mov ax, library_records[si]
-    call IF_AVAIALBLE
-    nwln
-
-    putstr book_list_row_10
-    mov si, 9
-    shl si, 1
+    call IF_AVAIALBLE_AL
+    cmp AL, 0
+    je book_list_row9_borrowed
+    ; Green BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 02Fh
+    MOV CH, 15
+    MOV CL, 53
+    MOV DH, 15
+    MOV DL, 66
+    INT 10h
+    jmp book_list_row9_end
+book_list_row9_borrowed:
+    ; Red BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 04Fh
+    MOV CH, 15
+    MOV CL, 53
+    MOV DH, 15
+    MOV DL, 66
+    INT 10h
+book_list_row9_end:
     mov ax, library_records[si]
     call IF_AVAIALBLE
     nwln
+
+putstr book_list_row_10
+    mov si, 9
+    shl si, 1
+    mov ax, library_records[si]
+    call IF_AVAIALBLE_AL
+    cmp AL, 0
+    je book_list_row10_borrowed
+    ; Green BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 02Fh
+    MOV CH, 16
+    MOV CL, 53
+    MOV DH, 16
+    MOV DL, 66
+    INT 10h
+    jmp book_list_row10_end
+book_list_row10_borrowed:
+    ; Red BG with Bright White FG
+    MOV AH, 06h
+    MOV AL, 00h
+    MOV BH, 04Fh
+    MOV CH, 16
+    MOV CL, 53
+    MOV DH, 16
+    MOV DL, 66
+    INT 10h
+book_list_row10_end:
+    mov ax, library_records[si]
+    call IF_AVAIALBLE
+    nwln
+
     PutStr book_list_row_end
     PutStr press_enter
     Getch AL
